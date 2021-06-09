@@ -1,4 +1,12 @@
 ﻿# FTIRMachineLearning
+ # Dependencies
+ tensorflow==1.14
+ matplotlib
+ opencv
+ pandas
+ pillow
+ cython
+ 
 Obtaining spectra:
 Retrieving the FTIR spectra: A web scraping implementation was developed in Selenium to retrieve the FTIR spectra from the NIST Chemistry WebBook. Spectra were downloaded using the CAS number identifier in the jcamp-dx format and SMILES keys for each of the downloaded spectra were saved separately in a text file. With RDKit Python implementation, the functional groups were parsed from the spectrum’s associated key.
 Spectral processing:
