@@ -12,80 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-r"""Simple transfer learning with Inception v3 or Mobilenet models.
+"""
+DEPENDENCIES:
+tensorflow==1.14
+matplotlib
+opencv
+pandas
+pillow
+cython
 
-With support for TensorBoard.
+to run:
+(make sure you're in the correct directory)
+python scripts/retrain.py --image_dir tf_files/ Insert_Training_Data_Title 
+--output_graph tf_files/retrained_graph.pb --output_labels tf_files/retrained_labels.txt 
+--summaries_dir summaries --how_many_training_steps 5000 --architecture inception_v3
 
-This example shows how to take a Inception v3 or Mobilenet model trained on
-ImageNet images, and train a new top layer that can recognize other classes of
-images.
-
-The top layer receives as input a 2048-dimensional vector (1001-dimensional for
-Mobilenet) for each image. We train a softmax layer on top of this
-representation. Assuming the softmax layer contains N labels, this corresponds
-to learning N + 2048*N (or 1001*N)  model parameters corresponding to the
-learned biases and weights.
-
-Here's an example, which assumes you have a folder containing class-named
-subfolders, each full of images for each label. The example folder flower_photos
-should have a structure like this:
-
-~/flower_photos/daisy/photo1.jpg
-~/flower_photos/daisy/photo2.jpg
-...
-~/flower_photos/rose/anotherphoto77.jpg
-...
-~/flower_photos/sunflower/somepicture.jpg
-
-The subfolder names are important, since they define what label is applied to
-each image, but the filenames themselves don't matter. Once your images are
-prepared, you can run the training with a command like this:
-
-
-```bash
-bazel build tensorflow/examples/image_retraining:retrain && \
-bazel-bin/tensorflow/examples/image_retraining/retrain \
-    --image_dir ~/flower_photos
-```
-
-Or, if you have a pip installation of tensorflow, `retrain.py` can be run
-without bazel:
-
-```bash
-python tensorflow/examples/image_retraining/retrain.py \
-    --image_dir ~/flower_photos
-```
-
-You can replace the image_dir argument with any folder containing subfolders of
-images. The label for each image is taken from the name of the subfolder it's
-in.
-
-This produces a new model file that can be loaded and run by any TensorFlow
-program, for example the label_image sample code.
-
-By default this script will use the high accuracy, but comparatively large and
-slow Inception v3 model architecture. It's recommended that you start with this
-to validate that you have gathered good training data, but if you want to deploy
-on resource-limited platforms, you can try the `--architecture` flag with a
-Mobilenet model. For example:
-
-```bash
-python tensorflow/examples/image_retraining/retrain.py \
-    --image_dir ~/flower_photos --architecture mobilenet_1.0_224
-```
-
-There are 32 different Mobilenet models to choose from, with a variety of file
-size and latency options. The first number can be '1.0', '0.75', '0.50', or
-'0.25' to control the size, and the second controls the input image size, either
-'224', '192', '160', or '128', with smaller sizes running faster. See
-https://research.googleblog.com/2017/06/mobilenets-open-source-models-for.html
-for more information on Mobilenet.
-
-To use with TensorBoard:
-
-By default, this script will log summaries to /tmp/retrain_logs directory
-
-Visualize the summaries with this command:
+Visualize the summaries:
 
 tensorboard --logdir /tmp/retrain_logs
 
