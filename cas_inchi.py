@@ -9,12 +9,18 @@ Created on Sat Nov  7 17:28:01 2020
 python cas_inchi.py --data_dir=data --cas_list=species.txt
 """
 import os
+import logging
 import argparse
 import sys
 
 import pandas as pd 
 import numpy as np
 
+from rdkit import Chem, RDLogger
+lg = RDLogger.logger()
+lg.setLevel(RDLogger.CRITICAL)
+
+from model.utils import set_logger
 print('imports loaded')
 func_grp_smarts = {'alkane':'[CX4;H0,H1,H2,H4]','methyl':'[CH3]','alkene':'[CX3]=[CX3]','alkyne':'[CX2]#C',
                    'alcohols':'[#6][OX2H]','amines':'[NX3;H2,H1;!$(NC=O)]', 'nitriles':'[NX1]#[CX2]', 
@@ -80,6 +86,7 @@ def save_target_to_csv(cas_inchi_df, save_path):
 
 
 if __name__ == '__main__':
+
     #Parsing the data from jdx and storing it in csv
 
     parser = argparse.ArgumentParser()
@@ -93,11 +100,13 @@ if __name__ == '__main__':
     data_dir = args.data_dir
     set_logger(data_dir, 'prepare_data.log')
     
+    logging.info('Computing the structures of functional groups')
     func_grp_structs = {func_name : Chem.MolFromSmarts(func_smarts)\
                         for func_name, func_smarts in func_grp_smarts.items()}
     print('funcgrpstruct')
     
     inchi_path = os.path.join(data_dir, 'inchi.txt')
+    logging.info('Loading inchi file from {}'.format(inchi_path))
     inchi_df = pd.read_csv(inchi_path, sep='\t', header = 0, usecols = [0,1],\
                         names = ['cas','inchi'], dtype = str)
     inchi_df.dropna(inplace = True)
@@ -105,5 +114,5 @@ if __name__ == '__main__':
     
     # Create and save csv of target 
     target_path = os.path.join(data_dir, 'target.csv')
-    print('Saving functional groups to csv.')
+    logging.info('Creating target csv dataset in {}'.format(target_path))
     save_target_to_csv(inchi_df, target_path)
